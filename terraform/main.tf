@@ -2,21 +2,23 @@ provider "aws" {
   region = "sa-east-1"
 }
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0" #check
+    }
+  }
+}
+
 module "network" {
   source = "./network"
 }
 
-module "sg" {
-  source = "./sg"
-  vpc_id = module.network.vpc_id
-}
-
-module "ec2" {
-  source = "./ec2"
-  subnet = module.network.subnet_id
-  sg_id  = module.sg.sg_id
-}
-
-output "public_ip" {
-  value = module.ec2.public_ip
+module "eks" {
+  source              = "./eks"
+  private-subnet-1-id = module.network.private-subnet-1-id
+  private-subnet-2-id = module.network.private-subnet-2-id
+  public-subnet-1-id  = module.network.public-subnet-1-id
+  public-subnet-2-id  = module.network.public-subnet-2-id
 }

@@ -49,8 +49,6 @@ RUN echo "[servers]\nec2 ansible_host=${EC2_IP} ansible_user=${EC2_USER}" > ${AN
 
 # docker build --build-arg SSHKEY_SOURCE_FILE="$SSHKEY_SOURCE_FILE" --build-arg EC2_IP="$EC2_IP" --build-arg EC2_USER="$EC2_USER" --rm -t ansible-vault . 
 
-# docker build --build-arg SSHKEY_SOURCE_FILE="$SSHKEY_SOURCE_FILE" -t ansible-vault .
-
 # docker run -it ansible-vault bash
 
 # docker run ansible-vault ansible-playbook -vvv /etc/ansible/playbooks/install_vault.yaml -i /etc/ansible/inventory/hosts --private-key /root/.ssh/id_rsa
