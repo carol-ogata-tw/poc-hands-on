@@ -1,0 +1,8 @@
+terraform/.env
+terraform/.terraform.lock.hcl
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+ansible/.env
+backup
+.DS_Store

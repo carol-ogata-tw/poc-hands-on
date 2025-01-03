@@ -1,0 +1,73 @@
+---
+- name: Install and configure Vault
+  hosts: ec2
+  become: yes
+
+  tasks:
+
+    # Install dependencies
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - unzip
+        state: present
+        update_cache: yes
+
+    # Download and install Vault
+    - name: Download Vault binary
+      shell: |
+        export VAULT_URL="https://releases.hashicorp.com/vault"
+        export VAULT_VERSION="1.5.0"
+        cd /tmp
+        curl --silent --remote-name "${VAULT_URL}/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"
+        unzip vault_${VAULT_VERSION}_linux_amd64.zip
+        sudo mv vault /usr/local/bin
+      args:
+        creates: /usr/local/bin/vault # The creates argument checks if the file /usr/local/bin/vault exists.
+
+    # Create vault directory
+    - name: Ensure vault data directory exists
+      file:
+        path: /opt/vault/data
+        state: directory
+        mode: '0755'
+
+    # Copy vault.service from Ansible Docker container to EC2 instance
+    - name: Copy vault service file
+      copy:
+        src: /etc/ansible/vault-files/vault.service
+        dest: /etc/systemd/system/vault.service
+        mode: '0755'
+
+  # Create vault.d directory
+    - name: Ensure vault data directory exists
+      file:
+        path: /etc/vault.d
+        state: directory
+        mode: '0755'
+
+    # Copy vault.hcl file from Ansible Docker container to EC2 instance
+    - name: Copy vault configuration file
+      copy:
+        src: /etc/ansible/vault-files/vault.hcl
+        dest: /etc/vault.d/vault.hcl
+        mode: '0644'
+
+    # Start Vault service
+    # - name: Start Vault service
+    #   systemd:
+    #     name: vault
+    #     enabled: yes
+    #     state: started
+    #     daemon_reload: yes
+
+
+# sudo vault server -config=/etc/vault.d/vault.hcl
+
+# vault operator init -address="http://127.0.0.1:8200"
+  
+# vault operator unseal <unseal-key-1>
+# vault operator unseal <unseal-key-2>
+# vault operator unseal <unseal-key-3>
+
